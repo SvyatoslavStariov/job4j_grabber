@@ -2,15 +2,12 @@ package ru.job4j.grabber;
 
 import ru.job4j.model.Post;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -89,25 +86,5 @@ public class PsqlStore implements Store {
         post.setLink(resultSet.getString("link"));
         post.setCreated(resultSet.getTimestamp("created").toLocalDateTime());
         return post;
-    }
-
-    public static void main(String[] args) throws IOException{
-        try (InputStream input = PsqlStore.class.getClassLoader()
-            .getResourceAsStream("rabbit.properties")) {
-            Properties config = new Properties();
-            config.load(input);
-            try (Store store = new PsqlStore(config)) {
-                store.save(new Post("title1","link1","description1", LocalDateTime.now()));
-                store.save(new Post("title2","link1","description2", LocalDateTime.now()));
-                store.save(new Post("title3","link3","description3", LocalDateTime.now()));
-                List<Post> posts = store.getAll();
-                posts.forEach(System.out::println);
-                Post post = store.findById(posts.get(0).getId());
-                System.out.println();
-                System.out.println(post);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }
