@@ -7,10 +7,10 @@ import java.util.Scanner;
 
 public class Menu {
 
-    public static final Integer ADD_POST = 1;
-    public static final Integer ADD_MANY_POST = 2;
-    public static final Integer SHOW_ALL_POSTS = 3;
-    public static final Integer DELETE_POST = 4;
+    public static final int ADD_POST = 1;
+    public static final int ADD_MANY_POST = 2;
+    public static final int SHOW_ALL_POSTS = 3;
+    public static final int DELETE_POST = 4;
 
     public static final String SELECT = "Выберите меню";
     public static final String COUNT = "Выберите количество создаваемых постов";
@@ -48,7 +48,7 @@ public class Menu {
                 commentGenerator.generate();
                 var post = new Post();
                 post.setText(text);
-                post.setComments(CommentGenerator.getComments());
+                post.setComments(commentGenerator.getComments());
                 var saved = postStore.add(post);
                 System.out.println("Generate: " + saved.getId());
             } else if (ADD_MANY_POST == userChoice) {
@@ -61,12 +61,12 @@ public class Menu {
                     System.out.printf("\rGenerate %.2f%% %.2fMb",
                             ((double) i / Integer.parseInt(count)) * 100,
                             memUsage());
-                    createPost(commentGenerator, userGenerator, postStore, text);
+                    postStore.createPost(commentGenerator, userGenerator,  text);
                 }
                 System.out.println();
                 memUsage();
             } else if (SHOW_ALL_POSTS == userChoice) {
-                System.out.println(PostStore.getPosts());
+                System.out.println(postStore.getPosts());
             } else if (DELETE_POST == userChoice) {
                 System.out.println("Удаление всех постов ...");
                 postStore.removeAll();
@@ -79,20 +79,9 @@ public class Menu {
 
     private static double memUsage() {
         var rt = Runtime.getRuntime();
-        var totalMem = rt.totalMemory();
-        var freeMem = rt.freeMemory();
-        var usedMem = totalMem - freeMem;
+        long totalMem = rt.totalMemory();
+        long freeMem = rt.freeMemory();
+        long usedMem = totalMem - freeMem;
         return (double) usedMem / 1024 / 1024;
-    }
-
-    private static void createPost(CommentGenerator commentGenerator,
-                                   UserGenerator userGenerator,
-                                   PostStore postStore, String text) {
-        userGenerator.generate();
-        commentGenerator.generate();
-        var post = new Post();
-        post.setText(text);
-        post.setComments(CommentGenerator.getComments());
-        postStore.add(post);
     }
 }

@@ -9,22 +9,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class PostStore {
 
-    private final static Map<Integer, Post> POSTS = new HashMap<>();
+    private final Map<Integer, Post> posts = new HashMap<>();
 
     private final AtomicInteger atomicInteger = new AtomicInteger(1);
 
+    public Collection<Post> getPosts() {
+        return posts.values();
+    }
+
     public Post add(Post post) {
-        var id = atomicInteger.getAndIncrement();
+        int id = atomicInteger.getAndIncrement();
         post.setId(id);
-        POSTS.put(id, post);
+        posts.put(id, post);
         return post;
     }
 
     public void removeAll() {
-        POSTS.clear();
+        posts.clear();
     }
 
-    public static Collection<Post> getPosts() {
-        return POSTS.values();
+    public void createPost(CommentGenerator commentGenerator,
+                            UserGenerator userGenerator,
+                            String text) {
+        userGenerator.generate();
+        commentGenerator.generate();
+        var post = new Post();
+        post.setText(text);
+        post.setComments(commentGenerator.getComments());
+        this.add(post);
     }
 }
